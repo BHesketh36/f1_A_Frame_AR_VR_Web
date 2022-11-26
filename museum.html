@@ -1,0 +1,242 @@
+<html>
+<head>
+    <title>
+        Museum Exploration
+    </title>
+
+    <!-- Main Component -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
+    <!-- Environment Component - UPDATED TO 1.2.0 to fix position being undefinded with environement
+        component update 14/04/21 -->
+    <script src="https://unpkg.com/aframe-environment-component"></script>
+
+    <!-- Event-set Component for Interaction such as "event-set__mouseenter=" -->
+    <script src="https://unpkg.com/aframe-event-set-component@5/dist/aframe-event-set-component.min.js"></script>
+    
+    <!-- Scripts! -->
+
+    <!-- Checks to see if session is supported in the current browser and displays a message briefly -->
+    <script type = "text/javascript">
+
+        const supported = navigator.xr.isSessionSupported("immersive-vr");
+    
+        if (supported) {
+          document.writeln("Virtual Reality is supported in this session!");
+    
+        } else {
+          document.writeln ("Virtual Reality is NOT supported in this session!");
+        }
+    </script>
+    
+    <!-- Script also used in 'onboard.html', the registered component (pause and play) use an 'Event Listener'
+         so that when the button is clicked, the object texture is swapped to the other texture (pause or play image.) -->
+    <script>
+        AFRAME.registerComponent('play-pause', {
+          init: function() {
+            var onboardVid = document.querySelector('#onboardVid');
+            var playControls = document.querySelector('#playControls');
+            this.el.addEventListener('click', function () {
+              if (onboardVid.paused) {
+                onboardVid.play();
+                playControls.setAttribute('src', '#pause');
+              } else {
+                onboardVid.pause();
+                playControls.setAttribute('src', '#play');
+              }
+            });
+          }
+        });
+      </script>
+
+    <!-- Custom script with sound effects linked to 'playControls' button for onboard video,
+        uses two event listeners so when mouse hovers over button, one sound plays, and another for when it is pressed -->
+
+        <!-- This script would cause 'el' is set to 'null' error since the script loaded in before the object itself into the scene, 
+            adding "window.onload=function() gives the browser time to load the scene before the script can run at all -->
+
+    <!-- Custom Cursor colour and sound script for interaction with buttons and objects, sound and colour change of UI hint that object can be interacted with -->
+    <script>
+        window.onload=function() {
+            var switchArea = document.querySelector('#playControls');
+            var soundFx = document.querySelector('#buttonFx');
+            var soundFx2 = document.querySelector('#buttonFx_press');
+            var cursorRgb = document.querySelector('#cursor');
+            var note1 = document.querySelector('#note1');
+            var toothless = document.querySelector('#magicBox');
+            var wireframeCar = document.querySelector('#wireframeModel');
+            
+            switchArea.addEventListener('mouseenter', function () {
+              soundFx.play();
+              cursorRgb.setAttribute('color', 'cyan');
+              note1.setAttribute('value', 'CLICK');
+            switchArea.addEventListener('mouseleave', function () {
+              cursorRgb.setAttribute('color', 'black');
+              note1.setAttribute('value', ' ');
+            switchArea.addEventListener('click', function () {
+              soundFx2.play();
+            });
+          });
+        })
+          toothless.addEventListener('mouseenter', function () {
+            soundFx.play();
+            cursorRgb.setAttribute('color', 'cyan');
+          toothless.addEventListener('mouseleave', function () {
+            cursorRgb.setAttribute('color', 'black');
+            });
+          });
+          wireframeCar.addEventListener('mouseenter', function () {
+            soundFx.play();
+          wiredframeCar.addEventListener('mouseleave', function () {
+            });
+          });
+        }
+    </script>
+    <!-- A bug occured that would not set the cursor back to black until button is clicked,
+        moving the mouseleave event listener abouve the click one fixed this problem -->
+    <!-- Keeping 'addEventListeners' for the same object in one script improved performance with 'window.onload=function()' -->
+    <!-- Overwriting the value in the text component is not currently working -->
+
+    <!-- End of custom Scripts -->
+</head>
+
+<body>
+    <!-- Can press ctrl + alt + i to bring up A-FRAME inspector to look at other presets-->
+
+    <!-- Attached environment component onto this -->
+    <a-scene background="color: blue" environment="preset:starry;
+     dressingAmount: 85; sunPosition: 1 5 -2; groundColor: #742; dressing: trees;
+     dressingOnPlayArea:0"> 
+
+    <!-- A-FRAME has many different presets for the environemnt which changes a 
+        model type in the scene and the colours of the sky and ground.-->
+
+         <!-- A-FRAME updated from 1.0.4 to 1.2.0, this affected the default movemnet speed of the camera.
+            Acceleration attribute changes the speed. -->
+
+        <a-entity camera position="-1.45 1.6 -6" wasd-controls="acceleration: 20" look-controls cursor="rayOrigin: #cursor" >
+            <a-cursor
+            id="cursor"
+            sound="src: url(music/garage.mp3); autoplay: true; volume:0.5"
+            raycaster="objects: .switch"
+            color="black"
+          ></a-cursor>
+          <a-entity id="note1" position="0 -0.8 -1.5" text="align:center; width:5; wrapCount:100; color: pink; value: ">
+          </a-entity>
+        </a-entity> 
+
+        <!-- Preloading Car object files -->
+    <a-assets>
+        <a-asset-item id="car-obj" src="model/Formula 1 mesh.obj"></a-asset-item>
+        <a-asset-item id="car-mtl" src="model/Formula_1_mesh.mtl"></a-asset-item>
+
+        <!-- Onboard 2D lap video, needs to be activted via button -->
+        <video id="onboardVid" src="videos/onboard2.mp4" loop="true"></video>
+
+        <!-- Preloading images for note blocks with "ids" that can be interacted with -->
+        <img src="images/onboard.jpg" id="onboardTb" />
+
+        <!-- Toothless is my digital Art Piece -->
+        <img src="placeholder/toothless.jpg" id="toothless" />
+
+        <!-- PRELOADING IN THE AUDIO SOUND EFFECTS -->
+        <audio
+        preload="auto" id="interactFx" src="sounds/interact.wav" crossorigin="anonymous">
+        </audio>
+    </a-assets>
+
+    <a-assets>
+        <audio
+        preload="auto" id="switch" src="sounds/heal.mp3" crossorigin="anonymous">
+        </audio>
+
+        <img id="play" src="images/play.jpg" crossorigin="anonymous">
+        <img id="pause" src="images/pause.jpg" crossorigin="anonymous">
+    </a-assets>
+
+    <audio
+    preload="auto" id="music" src="music/music.wav" crossorigin="anonymous">
+    </audio>
+
+    <a-assets>
+        <audio
+        preload="auto" id="buttonFx" src="sounds/button.mp3" crossorigin="anonymous">
+        </audio>
+
+        <audio
+        preload="auto" id="buttonFx_press" src="sounds/button_press.mp3" crossorigin="anonymous">
+        </audio>
+    </a-assets>
+
+    <!-- Custom Asset Models -->
+    <a-entity obj-model="obj:model/Formula 1 mesh.obj" rotation="0 0 0" 
+    animation="property: rotation; to: 0 360 0; loop: true; dur: 20000"
+    material="color:red" position="10 0.3 10"
+    scale="0.01 0.01 0.01">
+    </a-entity>
+    <!-- Animation -->
+
+    <a-entity obj-model="obj:model/Formula 1 mesh.obj" rotation="0 0 0"
+    id="wireframeModel" 
+    animation="property: rotation; to: 0 360 0; loop: true; dur: 20000"
+    material="color:yellow" position="-5 0.3 -5"
+    scale="0.01 0.01 0.01"
+    event-set__down="_event: mousedown; material.wireframe: true"
+    event-set__up="_event: mouseup; material.wireframe: false"
+    event-set__leave="_event: mouseleave; material.wireframe: false">
+    </a-entity>
+    <!-- Not closing off this entity block made all the entitys and the sky to be affected by the rotating animation,
+    and would move when the camera was moved by the user.-->
+
+    <!-- Light Sources in Environment -->
+    <a-light type="ambient" color="#445451"></a-light>
+    <a-light type="point" intensity="1" position="20 4 4"></a-light>
+
+    <a-assets>
+    <!-- DOME IMAGES -->
+    <img
+        id="garage"
+        crossorigin="anonymous"
+        src="360images/f1garage.png"
+    />        
+    </a-assets>
+
+    <!-- Dome (360 image can be walked into) -->
+    <a-sky
+    position="30 0 10"
+    id="domeImage"
+    radius="10"
+    src="#garage"
+    ></a-sky>
+
+    <!-- BOXES WITH IMAGES & HOVER ANIMATION (2.4CM UP FROM ORIGINAL POSITION) -->
+
+    <!-- Box when clicked returns user to onboard.html -->
+    <a-box src="#onboardTb" position="10 2 -5" rotation="0 5 0" scale="2 2 2" id="onboardBox"
+    animation="property: object3D.position.y; to: 2.4; dir: alternate; dur: 2000; loop: true"
+    link="href: onboard.html">
+    </a-box>
+
+    <!-- Box when clicked performs a "ease in cubic" animation and plays a sound, these are some of my art pictures -->
+    <a-box src="#toothless" shader="flat" id="magicbox" position="4 2 -10" rotation="0 0 0" scale="1 1 1"
+    animation="property: object3D.position.y; to: 2.4; dir: alternate; dur: 2000; loop: true"
+    animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 4350; from: 0.3 0.3 0.3; to: 1 1 1"
+    sound="on: click; src: #interactFx">
+    </a-box>
+
+    <!-- 2D Onboard Video Entity (Displayed on flat box like a plane object) -->
+    <a-entity geometry="primitive: box" scale="10 6 0.05" position="5 5 10" material="src: #onboardVid"></a-entity>
+    <!-- Box when clicked performs a "ease in cubic" animation and plays a sound, these are some of my art pictures -->
+
+    <!-- Pause/play switch similar to the button in "onboard.html", image is set as play for now as the video does not autoplay -->
+    <a-image id="playControls" src="#play" scale="0.7 0.7 1.3" rotation="0 180 0" position="5 1 8.7" play-pause></a-image>
+
+    <!-- TV Display -->
+    <a-box color="black" scale="10 6 1" position="5 5 10.5"></a-box>
+
+    <!-- Switch Stand -->
+    <a-box color="grey" scale="1 2 3" position="5 1 10.3"></a-box>
+    </a-scene>
+
+</body>
+</html>

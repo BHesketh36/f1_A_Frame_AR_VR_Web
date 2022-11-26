@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Bus Stop
+        </title>
+
+        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+
+        <!-- Event-set Component for Interaction such as "event-set__mouseenter=" -->
+        <script src="https://unpkg.com/aframe-event-set-component@5/dist/aframe-event-set-component.min.js"></script>
+
+        <!-- Briefly displays a message before loading the 3D scene to mention if session is supported on browser / device -->
+        <script type = "text/javascript">
+
+            const supported = navigator.xr.isSessionSupported("immersive-vr");
+        
+            if (supported) {
+              document.writeln("Virtual Reality is supported in this session!");
+        
+            } else {
+              document.writeln ("Virtual Reality is NOT supported in this session!");
+            }
+        </script>
+
+        <script>
+        window.onload=function() {
+          var soundFx = document.querySelector('#buttonFx');
+          var cursorRgb = document.querySelector('#cursor');
+          var enterBus = document.querySelector('#allAboard');
+            enterBus.addEventListener('mouseenter', function () {
+              soundFx.play();
+              cursorRgb.setAttribute('color', 'cyan');
+            enterBus.addEventListener('mouseleave', function () {
+              cursorRgb.setAttribute('color', 'black');
+            });
+          });
+        }
+      </script>
+
+    </head>
+    <body>
+          <a-scene>
+            <a-assets>
+                <img id="busArea" src="360images/f1garage.png">
+
+                <!-- Car Model Preload -->
+                <a-asset-item id="bus-obj" src="model/bus.obj"></a-asset-item>
+                <a-asset-item id="bus_stop-obj" src="model/bus_stop.obj"></a-asset-item>
+
+                <img src="images/showroom.jpg" id="showroomTb" />
+                <img src="images/hint.jpg" id="interactionHint" />
+            </a-assets>
+
+            <a-assets>
+              <audio
+              preload="auto" id="buttonFx" src="sounds/button.mp3" crossorigin="anonymous">
+              </audio>
+            </a-assets>
+
+            <!-- Cursor and UI colour (with slightly transparent black background behind the text to help make it stand out on screen) -->
+            <a-entity camera="" look-controls cursor="rayOrigin: #cursor">
+              <a-cursor
+                id="cursor"
+                raycaster="objects: .allAboard"
+              ></a-cursor>
+              <a-entity id="messageOnScreen" position="0 -0.8 -1.5" text="align:center; width:7; wrapCount:100; color: pink; value:Wait for the bus!">
+              </a-entity>
+              <a-plane
+                position="0 -1.4 -2.5" scale="2.5 0.7 0.7" color="black" opacity="0.5">
+              </a-plane>
+            </a-entity>
+
+            <!-- Background Music (DISABLED) -->
+            <!--sound="src: url(music/garage.mp3); autoplay: true"-->
+
+            <!-- Skybox -->
+            <a-sky src="#busArea" radius="10000"></a-sky> <!-- # Required a big radius for objects to be visible -->
+
+            <!-- Passing Bus Model -->
+            <!-- Uses bus audio attached to the bus model so the audio comes from its current position with a maximum distance -->
+            <a-entity obj-model="obj:model/bus.obj" rotation="0 180 0" 
+            material="color:green" position="9000 -45 -400"
+            animation="property: position; to: -11000 -45 -400; dur: 6000; easing: linear; loop: true"
+            scale="50.01 50.01 50.01" sound="src: url(sounds/bus.mp3); volume: 100; autoplay:true; loop:true; maxDistance:1000" >
+            </a-entity>
+
+            <!-- The Pickup Bus -->
+            <a-entity obj-model="obj:model/bus.obj" rotation="0 0 0" 
+            material="color:cyan" position="-11000 -45 -200"
+            animation="property: position; to: -160 -45 -200; dur: 15000; easing: linear; loop: false"
+            scale="50.01 50.01 50.01"></a-entity>
+            </a-entity>
+
+            <!-- The Bus Stop -->
+            <a-entity obj-model="obj:model/bus_stop.obj" rotation="0 0 0" position="-1 -40 50"
+            scale="50.01 50.01 50.01" material="color:brown">
+            </a-entity>
+
+            <!-- Road -->
+            <a-plane rotation="-90 0 0" position="0 -50 -500"
+            width="10000" height="800" material="src: images/road.jpg; envMap: #busArea; roughness: 1; metalness: 0;
+            repeat: 100 16"></a-plane>
+
+            <!-- Grass -->
+            <a-plane rotation="-90 0 0" position="0 -50 0"
+            width="10000" height="200" material="src: images/grass.jpg; roughness: 1; metalness: 0;
+            repeat: 100 4"></a-plane>
+
+            <!-- Get in bus, click box to visit showroom (ID is important so Interaction sound and colour change of cursor works) -->
+            <a-box src="#showroomTb" position="-11000 0 -250" rotation="0 0 0" scale="18 18 1"
+            id="allAboard"
+            animation="property: position; to: 0 0 -100; dur: 15000; easing: linear; loop: false"
+            link="href: showroom.html"></a-box>           
+
+            <!-- Interaction Hint (To help player understand how to interact with other objects using the cursor) -->
+            <a-box src="#interactionHint" position="-11000 0 -250" rotation="0 0 0" scale="168 18 1"
+            animation="property: position; to: -145 5 -100; dur: 15000; easing: linear; loop: false">
+            </a-box>
+        </a-scene>
+    </body>
+</html> 

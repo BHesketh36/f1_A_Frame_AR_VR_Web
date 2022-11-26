@@ -1,0 +1,172 @@
+<html>
+  <head>
+    <!-- INFORMATION APPEARS ON LOADING SCREEN -->
+    <meta charset="utf-8" />
+    <title>Grand Prix Tracks 360 Degree Showroom</title>
+    <meta name="description" content="360&deg ; Grand Prix Circuit Showroom" />
+
+    <!-- JAVASCRIPT LIBRARIES FROM A-FRAME WEBSITE FOR COMPONENTS (INTERACTION, BUILDING BLOCKS FOR VR TO WORK ON THE WEB) -->
+    <!-- Main Component -->
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+
+    <!-- Event-set Component for Interaction such as "event-set__mouseenter=" -->
+    <script src="https://unpkg.com/aframe-event-set-component@5/dist/aframe-event-set-component.min.js"></script>
+    
+    <!-- Layout Component to place the thumbnail buttons in a circular layout while sticking to the camera. -->
+    <script src="https://unpkg.com/aframe-layout-component@5.3.0/dist/aframe-layout-component.min.js"></script>
+    
+    <script src="https://unpkg.com/aframe-template-component@3.2.1/dist/aframe-template-component.min.js"></script>
+
+    <script src="https://unpkg.com/aframe-proxy-event-component@2.1.0/dist/aframe-proxy-event-component.min.js"></script>
+
+    <!-- SIMPLE IMAGE LINK TEMPLATE NAMED "USETEMP)" TO BE USED LATER ON -->
+    <script id="useTemp" type="text/html">
+      <a-entity class="useTemp"
+        geometry="primitive: plane; height: 1; width: 1"
+        material="shader: flat; src: ${thumb}"
+        event-set__mouseenter="scale: 1.2 1.2 1; PlaySound"
+        event-set__mouseleave="scale: 1 1 1; StopSound"
+        event-set__click="_target: #image-360; _delay: 300; material.src: ${src}"
+        proxy-event="event: click; to: #image-360; as: fade"
+        sound="on: click; src: #clickFx">
+      </a-entity>
+    </script>
+
+    <script type = "text/javascript">
+
+    const supported = navigator.xr.isSessionSupported("immersive-vr");
+
+    if (supported) {
+      document.writeln("Virtual Reality is supported in this session!");
+
+    } else {
+      document.writeln ("Virtual Reality is NOT supported in this session!");
+    }
+    </script>
+
+  </head>
+  <body>
+
+    <a-scene inspector keyboard-shortcuts screenshot vr-mode-ui
+    device-orientation-permission-ui>
+      <a-assets>
+        <!-- PRELOADING IN THE AUDIO SOUND EFFECTS -->
+        <audio
+        preload="auto" id="clickFx" src="sounds/heal.mp3" crossorigin="anonymous">
+        </audio>
+
+        <!-- CREATING ID'S FOR THUMBNAILS ON BUTTONS -->
+        <img
+          id="australiaTb"
+          crossorigin="anonymous"
+          src="tracks/australia.jpg"
+        />
+        <img
+          id="bakuTb"
+          crossorigin="anonymous"
+          src="tracks/bahrain.jpg"
+        />
+        <img
+          id="vietnamTb"
+          crossorigin="anonymous"
+          src="tracks/vietnam.jpg"
+        />
+        <img
+          id="monacoTb"
+          crossorigin="anonymous"
+          src="tracks/monaco.jpg"
+        />
+        <img
+          id="onboardTb"
+          crossorigin="anonymous"
+          src="images/onboard.jpg"
+        />
+        <img
+        id="museumTb"
+        crossorigin="anonymous"
+        src="images/museum.jpg"
+      />
+
+        <!-- SHOWROOM IMAGES -->
+        <img
+          id="australia"
+          crossorigin="anonymous"
+          src="360images/f1australia.png"
+        />
+        <img
+          id="baku"
+          crossorigin="anonymous"
+          src="360images/f1Baku.png"
+        />
+        <img
+          id="vietnam"
+          crossorigin="anonymous"
+          src="360images/f1Vietnam.png"
+        />
+        <img
+          id="monaco"
+          crossorigin="anonymous"
+          src="360images/f1Monaco.png"
+        />        
+
+      </a-assets>
+
+      <a-sky
+        id="image-360"
+        radius="10"
+        src="#australia"
+        animation__fade="property: components.material.material.color; type: color; from: #FFF; to: #000; dur: 300; startEvents: fade"
+        animation__fadeback="property: components.material.material.color; type: color; from: #000; to: #FFF; dur: 300; startEvents: animationcomplete__fade"
+      ></a-sky>
+
+      <!-- Image links. -->
+      <a-entity id="useTemp" layout="type: circle; margin: 1.5; radius: 1.5" position="0 -1 -4">
+        <a-entity
+          template="src: #useTemp"
+          data-src="#australia"
+          data-thumb="#australiaTb"
+        ></a-entity>
+        <a-entity
+          template="src: #useTemp"
+          data-src="#baku"
+          data-thumb="#bakuTb"
+        ></a-entity>
+        <a-entity
+          template="src: #useTemp"
+          data-src="#vietnam"
+          data-thumb="#vietnamTb"
+        ></a-entity>
+        <a-entity
+          template="src: #useTemp"
+          data-src="#monaco"
+          data-thumb="#monacoTb"
+        ></a-entity>
+        <a-entity 
+          link="href: onboard.html; title: Onboard with Lewis Hamilton; image: #onboardTb" image="placeholder/toothless.jpg"
+          template="src: #useTemp"
+          data-src="#onboard"
+          data-thumb="#onboardTb"
+        ></a-entity>
+        <a-entity
+          link="href: museum.html; title: F1 Museum; image: #museumTb" image="images/museum.jpg"
+          template="src: #useTemp"
+          data-src="#museum"
+          data-thumb="#museumTb"
+        ></a-entity>
+      </a-entity>
+
+      <!-- Camera + cursor + background music (attached to cursor) -->
+      <a-entity camera="" look-controls cursor="rayOrigin: mouse">
+        <a-cursor
+          id="cursor"
+          animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 100"
+          animation__fusing="property: fusing; startEvents: fusing; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500"
+          event-set__mouseenter="_event: mouseenter; color: green;"
+          event-set__mouseleave="_event: mouseleave; color: black;"
+          sound="src: url(music/music.wav); autoplay: true; loop:true; volume:0.3"
+          raycaster="objects: .useTemp"
+        ></a-cursor>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>

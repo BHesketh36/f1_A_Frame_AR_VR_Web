@@ -1,0 +1,89 @@
+<html>
+  <head>
+    <!-- INFORMATION APPEARS ON LOADING SCREEN -->
+    <meta charset="utf-8" />
+    <title>Onboard with Lewis Hamilton</title>
+    <meta name="description" content="360&deg ; Mercedes Onboard with Lewis Hamilton" />
+
+    <!-- JAVASCRIPT LIBRARIES FROM A-FRAME WEBSITE FOR COMPONENTS (INTERACTION, BUILDING BLOCKS FOR VR TO WORK ON THE WEB) -->
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    
+    <script type = "text/javascript">
+
+        const supported = navigator.xr.isSessionSupported("immersive-vr");
+    
+        if (supported) {
+          document.writeln("Virtual Reality is supported in this session!");
+    
+        } else {
+          document.writeln ("Virtual Reality is NOT supported in this session!");
+        }
+    </script>
+
+    <!-- Script also used in 'museum.html', the registered component (pause and play) use an 'Event Listener'
+         so that when the button is clicked, the object texture is swapped to the other texture (pause or play image.) -->
+
+    <script>
+      AFRAME.registerComponent('play-pause', {
+        init: function() {
+          var mercVideo = document.querySelector('#onboardMerc');
+          var playControls = document.querySelector('#playControls');
+          this.el.addEventListener('click', function () {
+            if (mercVideo.paused) {
+              mercVideo.play();
+              playControls.setAttribute('src', '#pause');
+            } else {
+              mercVideo.pause();
+              playControls.setAttribute('src', '#play');
+            }
+          });
+        }
+      });
+    </script>
+</head>
+<body>
+
+  <!-- a-scene made to display in VR mode for the UI elements -->
+    <a-scene inspector keyboard-shortcuts screenshot vr-mode-ui
+    device-orientation-permission-ui>
+
+    <!-- 360 Video of Lewis Hamilton Onboard -->
+        <a-assets>
+          <video id="onboardMerc" 
+            style="display:none" 
+            src="videos/360merc.mp4" 
+            autoplay loop crossorigin="anonymous" 
+            playsinline webkit-playsinline>
+          </video>
+
+        <!-- Three images, for Play/Pause button (will switch between the two, and finally a Return button to go back to the showroom) -->
+        <img id="play" src="images/play.jpg">
+        <img id="pause" src="images/pause.jpg">
+        <img id="return" src="images/showroom.jpg">
+    </a-assets>
+        
+    <!-- 360 ONBOARD VIDEO -->
+    <a-videosphere src="#onboardMerc" 
+    play-on-window-click
+    play-on-vrdisplayactivate-or-enter-vr
+    rotation="0 -90 0"
+    material geometry scale>
+    </a-videosphere>
+    
+    <!-- Camera + cursor. -->
+    <a-entity camera="" look-controls cursor="rayOrigin: mouse" position="0 0 0">
+     <!-- Text message that appears on screen -->
+     <!-- Attached both text message and control images inside of the entity for the camera, this keeps them in relative position regardless of camera movement -->
+      <a-entity id="note" position="0 -0.3 -1.5" text="align:center; 
+      width:3;
+      wrapCount:100;
+      color:red;
+      value:Click red/green button to Pause/Play Video">
+      </a-entity>
+      <!-- Starting image for Play/Pause button is the button since "autoplay" is set to true -->
+      <a-image id="playControls" src="#pause" scale="0.4 0.4 1" position="-2 -1 -2" play-pause></a-image>
+      <a-image id="escapeControls" src="#return" scale="0.4 0.4 1" position="2 -1 -2" link="href: showroom.html; title: Track Showroom"></a-image>
+    </a-entity>
+</body>
+</a-scene>
+</html>
